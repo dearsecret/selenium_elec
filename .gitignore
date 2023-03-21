@@ -1,5 +1,5 @@
 .env
-.cust_lst.txt
+.cust_lst
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
