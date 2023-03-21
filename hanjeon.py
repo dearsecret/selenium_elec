@@ -13,7 +13,7 @@ load_dotenv()
 HANJEON_ID = os.getenv("HANJEON_ID")
 HANJEON_PW = os.getenv("HANJEON_PW")
 
-user_lst_path = os.path.abspath(os.path.join(os.getcwd(), "cust_lst.txt"))
+user_lst_path = os.path.abspath(os.path.join(os.getcwd(), "cust_lst"))
 f = open(user_lst_path, "r")
 lines = f.readlines()
 user_lst = [line.strip() for line in lines]
