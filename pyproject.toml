@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "selenium_elec"
+version = "0.1.0"
+description = ""
+authors = ["dearsecret <dearsecret1217@gmail.com>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+selenium = "^4.8.2"
+black = "^23.1.0"
+python-dotenv = "^1.0.0"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
