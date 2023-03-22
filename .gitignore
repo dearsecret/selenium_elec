@@ -1,5 +1,6 @@
 .env
 cust_lst.txt
+result.csv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
