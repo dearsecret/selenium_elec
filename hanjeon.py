@@ -3,7 +3,6 @@ import os
 import pandas as pd
 from dotenv import load_dotenv
 
-from datetime import datetime
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -16,7 +15,7 @@ HANJEON_ID = os.getenv("HANJEON_ID")
 HANJEON_PW = os.getenv("HANJEON_PW")
 
 user_lst_path = os.path.abspath(os.path.join(os.getcwd(), "cust_lst.txt"))
-f = open(user_lst_path, "r")
+f = open(user_lst_path, "r", encoding="utf-8")
 lines = f.readlines()
 user_lst = [line.strip() for line in lines]
 
@@ -35,13 +34,12 @@ browser.get(
 #         )
 #     except:
 #         wait_and_clear(driver, element, timeout)
-
 #     finally:
 #         n += 1
 #         print(f"{n}번 시도")
 
 
-## 로그인
+# 로그인
 login_id = browser.find_element(By.XPATH, '//*[@id="id_A"]')
 password = browser.find_element(By.XPATH, '//*[@id="pw_A"]')
 
@@ -56,13 +54,11 @@ login_button.click()
 try:
     WebDriverWait(browser, 3).until(EC.alert_is_present())
     alert = browser.switch_to.alert
-
     # 취소하기(닫기)
     alert.dismiss()
-
     # 확인하기
     # alert.accept()
-except:
+except Exception:
     print("no alert")
 
 time.sleep(1)
@@ -83,6 +79,7 @@ for cust in user_lst:
         By.XPATH, '//*[@id="content"]/div[3]/form/fieldset/div[2]/a'
     )
     search_button.click()
+    time.sleep(1)
     WebDriverWait(browser, 5).until(
         EC.presence_of_element_located((By.CLASS_NAME, "td_cont"))
     )
@@ -100,13 +97,9 @@ for cust in user_lst:
     ).text
 
     total[cust] = [bill_date, kwh, price]
-
-    time.sleep(1)
     browser.find_element(By.XPATH, '//*[@id="searchCustNo"]/dd/input').clear()
 
+time.sleep(1)
 df = pd.DataFrame.from_dict(total, orient="index", columns=["날짜", "kwh", "청구요금"])
 df.to_csv("result.csv")
 print(df)
-# now = datetime.now()
-# with open() as f:
-#   f.write("")
