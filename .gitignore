@@ -1,6 +1,5 @@
 .env
-cust_lst.txt
-result.csv
+gspread-384908-7f214dba2b69.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

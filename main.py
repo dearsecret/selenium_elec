@@ -9,34 +9,25 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select
 
+from spread import call_cust, call_spread, append_spread
 
 load_dotenv()
 HANJEON_ID = os.getenv("HANJEON_ID")
 HANJEON_PW = os.getenv("HANJEON_PW")
 
-user_lst_path = os.path.abspath(os.path.join(os.getcwd(), "cust_lst.txt"))
-f = open(user_lst_path, "r", encoding="utf-8")
-lines = f.readlines()
-user_lst = [line.strip() for line in lines]
+# user_lst_path = os.path.abspath(os.path.join(os.getcwd(), "cust_lst.txt"))
+# f = open(user_lst_path, "r", encoding="utf-8")
+# lines = f.readlines()
+# user_lst = [line.strip() for line in lines]
 
+user_lst = call_cust()
+db = call_spread().iloc[[-1], :]
+# print(db)
 
 browser = webdriver.Chrome()
 browser.get(
     "https://cyber.kepco.co.kr/ckepco/front/jsp/ME/C/A/MECALP001_elec.jsp?login_type=1"
 )
-
-
-# def wait_and_clear(driver, element, timeout=5, n=0):
-#     """wait for the element and clear the content"""
-#     try:
-#         WebDriverWait(driver, timeout).until(
-#             EC.presence_of_element_located((By.XPATH, element))
-#         )
-#     except:
-#         wait_and_clear(driver, element, timeout)
-#     finally:
-#         n += 1
-#         print(f"{n}번 시도")
 
 
 # 로그인
@@ -65,7 +56,7 @@ time.sleep(1)
 browser.get("https://cyber.kepco.co.kr/ckepco/front/jsp/CY/E/A/CYEAPP008_esb1.jsp")
 
 
-total = {}
+df = pd.DataFrame()
 for cust in user_lst:
     WebDriverWait(browser, 3).until(
         EC.presence_of_element_located((By.XPATH, '//*[@id="searchCustNo"]/dd/input'))
@@ -86,6 +77,7 @@ for cust in user_lst:
     cust = browser.find_element(
         By.XPATH, '//*[@id="content"]/div[4]/div[1]/table/tbody/tr/td[2]/div'
     ).text
+    cust = "".join(cust.split("-"))
     bill_date = browser.find_element(
         By.XPATH, '//*[@id="content"]/div[4]/div[1]/table/tbody/tr/td[3]/div'
     ).text
@@ -95,11 +87,12 @@ for cust in user_lst:
     price = browser.find_element(
         By.XPATH, '//*[@id="content"]/div[4]/div[1]/table/tbody/tr/td[6]/div'
     ).text
-
-    total[cust] = [bill_date, kwh, price]
+    df.loc[bill_date, cust] = price
     browser.find_element(By.XPATH, '//*[@id="searchCustNo"]/dd/input').clear()
 
 time.sleep(1)
-df = pd.DataFrame.from_dict(total, orient="index", columns=["날짜", "kwh", "청구요금"])
-df.to_csv("result.csv")
-print(df)
+
+
+# print(pd.concat([db, df]))
+if db.index != df.index:
+    append_spread(df.reset_index().values.tolist()[0])
